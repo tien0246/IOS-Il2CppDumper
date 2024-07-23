@@ -2,3 +2,4 @@
 /packages
 /.vscode
 Makefile
+*.plist
