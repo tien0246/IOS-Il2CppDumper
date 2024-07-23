@@ -1,0 +1,8 @@
+Package: com.unity.dumpil2cpp
+Name: DumpIL2CPP
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: DumpIL2CPP
+Author: Batchh & tien0246
+Section: Tweaks
