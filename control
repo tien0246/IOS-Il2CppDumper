@@ -1,8 +1,8 @@
-Package: com.unity.dumpil2cpp
-Name: DumpIL2CPP
+Package: com.ios.il2cppdumper
+Name: IOS Il2CppDumper
 Depends: mobilesubstrate
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: DumpIL2CPP
+Description: Dump il2cpp data at runtime on iOS
 Author: Batchh & tien0246
 Section: Tweaks
