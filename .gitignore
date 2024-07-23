@@ -1,3 +1,5 @@
 /.theos
 /packages
 /.vscode
+Makefile
+*.plist
