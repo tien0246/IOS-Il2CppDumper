@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include <utility>
-#include <thread>
 
 #import <SCLAlertView/SCLAlertView.h>
 #import <SSZipArchive/ZipArchive.h>
@@ -11,20 +10,19 @@
 
 #include "Core/Il2cpp.hpp"
 #include "Core/Dumper.hpp"
-#include <hash/hash.h>
 
-#define WAIT_TIME_SEC 10
-#define DUMP_FOLDER @"UNITYDUMP"
+#include "Core/config.h"
 
 void dump_thread();
 
 __attribute__((constructor)) static void onLoad()
 {
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    // NSLog(@"======= I'm Loaded ========");
-    std::thread(dump_thread).detach();
-  });
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(queue, ^{
+        NSLog(@"=================STRAT DUMPPER=================");
+        dump_thread();
+        NSLog(@"=================END DUMPPER=================");
+    });
 }
 
 void dump_thread()
@@ -39,14 +37,14 @@ void dump_thread()
 
   NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleNameKey];
 
-  NSString *dumpFolderName = [NSString stringWithFormat:@"%@_%@", [appName stringByReplacingOccurrencesOfString:@" " withString:@""], DUMP_FOLDER];
+  NSString *dumpFolderName = [NSString stringWithFormat:@"%@_%s", [appName stringByReplacingOccurrencesOfString:@" " withString:@""], DUMP_FOLDER];
 
   NSString *dumpPath = [NSString stringWithFormat:@"%@/%@", docDir, dumpFolderName];
   NSString *headersdumpPath = [NSString stringWithFormat:@"%@/%@", dumpPath, @"Assembly"];
   NSString *zipdumpPath = [NSString stringWithFormat:@"%@.zip", dumpPath];
 
   NSString *appPath = [[NSBundle mainBundle] bundlePath];
-  NSString *unityFrameworkPath = [appPath stringByAppendingPathComponent:@"Frameworks/UnityFramework.framework/UnityFramework"]; //Change this if you need to
+  NSString *unityFrameworkPath = [appPath stringByAppendingPathComponent:@"Frameworks/UnityFramework.framework/UnityFramework"];
 
   Variables::IL2CPP::processAttach(unityFrameworkPath.UTF8String);
 

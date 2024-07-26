@@ -18,12 +18,23 @@ namespace Dumper
     };
 
     extern DumpStatus status;  // Declare the variable
+    extern void *domain;  // Declare the variable
+    extern std::string dumpDir;  // Declare the variable
 
     void init();
 
     DumpStatus dump(const std::string &dir, const std::string &headers_dir);
 
-    extern void *domain;  // Declare the variable
+    std::string dumpField(void *klass);
+
+    std::string dumpProperty(void *klass);
+
+    std::string dumpMethod(void *klass);
+
+    std::string getMethodModifier(uint32_t flags);
+
+    std::string getClassName(void *klass);
+
 
     std::vector<void *> getAssemblies();
 
@@ -33,4 +44,5 @@ namespace Dumper
 
     std::vector<void *> getFields(void *klass);
 
+    void Log(const char *fmt, ...);
 }
