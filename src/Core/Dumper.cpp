@@ -5,6 +5,8 @@
 #include "Util.hpp"
 #include "il2cpp-tabledefs.h"
 
+#include "config.h"
+
 #pragma GCC diagnostic ignored "-Wundefined-internal"
 
 namespace Dumper {
@@ -222,15 +224,28 @@ std::string Dumper::dumpField(void *klass) {
 
         auto field_type = Variables::IL2CPP::il2cpp_field_get_type(field);
         auto field_class = Variables::IL2CPP::il2cpp_class_from_type(field_type);
-        outPut << getClassName(field_class) << " " << Variables::IL2CPP::il2cpp_field_get_name(field);
+        std::string field_type_name = getClassName(field_class);
+        outPut << field_type_name << " " << Variables::IL2CPP::il2cpp_field_get_name(field);
 
         if (attrs & FIELD_ATTRIBUTE_LITERAL && is_enum) {
             uint64_t val = 0;
             Variables::IL2CPP::il2cpp_field_static_get_value(field, &val);
             outPut << " = " << std::dec << val << ";\n";
+        } else if (attrs & FIELD_ATTRIBUTE_LITERAL) {
+            if (field_type_name == "String") {
+                void *val = nullptr;
+                Variables::IL2CPP::il2cpp_field_static_get_value(field, &val);
+                uint16_t *chars = Variables::IL2CPP::il2cpp_string_chars(val);
+                outPut << " = \"" << uint16ToString(chars) << "\";\n";
+            } else {
+                uint64_t val = 0;
+                Variables::IL2CPP::il2cpp_field_static_get_value(field, &val);
+                outPut << " = " << std::dec << val << ";\n";
+            }
         } else {
             outPut << "; // 0x" << std::hex << std::uppercase << Variables::IL2CPP::il2cpp_field_get_offset(field) << "\n";
         }
+
     }
     if (outPut.str().length() == 12) return "";  // no fields
     return outPut.str();
@@ -277,18 +292,19 @@ std::string Dumper::dumpProperty(void *klass) {
 
 std::string Dumper::dumpMethod(void *klass) {
     std::stringstream outPut;
-    outPut << "\n\t// Methods\n";
+    outPut << "\n\t// Methods\n\n";
     void *iter = nullptr;
     while (auto method = Variables::IL2CPP::il2cpp_class_get_methods(klass, &iter)) {
-        auto methodPointer = *(void **)method;
-        if (methodPointer) {
-            outPut << "\t// RVA: 0x" << std::hex << std::uppercase << (uint64_t)methodPointer - Variables::info.address;
-        } else {
-            outPut << "\t// RVA: -1";
-        }
-        outPut << "\n\t";
         uint32_t iflags = 0;
         auto flags = Variables::IL2CPP::il2cpp_method_get_flags(method, &iflags);
+
+        auto methodPointer = *(void **)method;
+        if (!methodPointer || flags & METHOD_ATTRIBUTE_ABSTRACT) {
+            outPut << "\t// RVA: -1";
+        } else {
+            outPut << "\t// RVA: 0x" << std::hex << std::uppercase << (uint64_t)methodPointer - Variables::info.address;
+        }
+        outPut << "\n\t";
         outPut << getMethodModifier(flags);
         auto return_type = Variables::IL2CPP::il2cpp_method_get_return_type(method);
         if (Variables::IL2CPP::il2cpp_type_is_byref(return_type)) {
@@ -325,8 +341,7 @@ std::string Dumper::dumpMethod(void *klass) {
         if (param_count > 0) {
             outPut.seekp(-2, outPut.cur);
         }
-        outPut << ") { }\n";
-        // TODO GenericInstMethod: lmao too lazy to implement
+        outPut << ") { }\n\n";
     }
     if (outPut.str().length() == 13) return "";  // no methods
     return outPut.str();
@@ -398,7 +413,7 @@ std::string Dumper::getClassName(void *klass) {
 }
 
 void Dumper::Log(const char *fmt, ...) {
-#ifdef DEBUG
+#if DEBUG
     File logfile(dumpDir + "/logs.txt", "a");
     if (!logfile.ok()) return;
     va_list args;
@@ -408,4 +423,13 @@ void Dumper::Log(const char *fmt, ...) {
     va_end(args);
     logfile.close();
 #endif
+}
+
+std::string Dumper::uint16ToString(uint16_t *str) {
+    std::string out;
+    while (*str) {
+        out += *str;
+        str++;
+    }
+    return out;
 }

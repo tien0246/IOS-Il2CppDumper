@@ -45,4 +45,6 @@ namespace Dumper
     std::vector<void *> getFields(void *klass);
 
     void Log(const char *fmt, ...);
+
+    std::string uint16ToString(uint16_t *str);
 }
