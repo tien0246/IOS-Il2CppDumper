@@ -18,5 +18,5 @@ Not every game can be dumped with this tool, if it doesn't work in certain games
 
 #### Credits
 - [Tien0246](https://github.com/tien0246)
-- [https://github.com/Batchhh](https://github.com/Batchhh)
+- [Batchhh](https://github.com/Batchhh)
 - [Perfare](https://github.com/Perfare)
