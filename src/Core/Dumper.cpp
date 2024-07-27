@@ -44,7 +44,7 @@ Dumper::DumpStatus Dumper::dump(const std::string &dir, const std::string &heade
 
     Dumper::init();
 
-    File dumpFile(dir + "/dump.txt", "w");
+    File dumpFile(dir + "/dump.cs", "w");
     if (!dumpFile.ok()) return Dumper::DumpStatus::ERROR;
 
     if (headers_dir.empty()) return Dumper::DumpStatus::ERROR;
@@ -65,7 +65,7 @@ Dumper::DumpStatus Dumper::dump(const std::string &dir, const std::string &heade
         const void *image = Variables::IL2CPP::il2cpp_assembly_get_image(assembly);
         const char *imageName = Variables::IL2CPP::il2cpp_image_get_name((void *)image);
 
-        std::string assemblyFileName = headers_dir + "/" + imageName + ".txt";
+        std::string assemblyFileName = headers_dir + "/" + imageName + ".cs";
         File singleAssemblyFile(assemblyFileName, "w");
         std::stringstream singleAssemblyOutPut;
         auto classes = Dumper::getClasses((void *)image);
