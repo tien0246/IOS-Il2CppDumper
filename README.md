@@ -58,7 +58,7 @@ Available options:
 Made for educational purpose. 
 Not every game can be dumped with this tool, if it doesn't work in certain games it needs a bit of manual work. 
 
-## Credits & Thank
+## Credits & Thanks
 
 - [Tien0246](https://github.com/tien0246)
 - [Batchhh](https://github.com/Batchhh)
