@@ -10,4 +10,4 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
   
   git clone https://github.com/tien0246/IOS-Il2CppDumper.git
 
-- Change bundle id in **dada**
+- Change bundle id in **__IOSIl2CppDumper.plist__**
