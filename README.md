@@ -16,7 +16,7 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
 
 ### Outputs
 
-#### Dump.txt
+#### Dump.cs
 
 All the dumped data. The file is written in C# format; you can use [Sublime Text](https://www.sublimetext.com) to view it with syntax highlighting.
 
@@ -34,7 +34,7 @@ For IDA
 
 ### Configuration
 
-All the configuration options are located in scr/Core/config.h
+All the configuration options are located in src/Core/config.h
 
 Available options:
 
