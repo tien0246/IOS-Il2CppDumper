@@ -13,8 +13,9 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
 - Change bundle id in **IOSIl2CppDumper.plist**
 - Run the game and follow the popups!
 
-### Discaimer 
-Not every game can be dumped with this tool, if it doesn't work in certain games it needs a bit of manual work
+### Disclaimer 
+Made for educational purpose. 
+Not every game can be dumped with this tool, if it doesn't work in certain games it needs a bit of manual work. 
 
 #### Credits
 - [Tien0246](https://github.com/tien0246)
