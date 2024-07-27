@@ -1,2 +1,2 @@
 # IOS-Il2CppDumper
- Dump il2cpp data at runtime on iOS
+ Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption and obfuscation.
