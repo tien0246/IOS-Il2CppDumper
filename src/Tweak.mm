@@ -44,9 +44,17 @@ void dump_thread()
   NSString *zipdumpPath = [NSString stringWithFormat:@"%@.zip", dumpPath];
 
   NSString *appPath = [[NSBundle mainBundle] bundlePath];
-  NSString *unityFrameworkPath = [appPath stringByAppendingPathComponent:@"Frameworks/UnityFramework.framework/UnityFramework"];
+  NSString *binaryPath = [NSString stringWithFormat:@"%s", BINARY_NAME];
+  if ([binaryPath isEqualToString:@"UnityFramework"])
+  {
+    binaryPath = [appPath stringByAppendingPathComponent:@"Frameworks/UnityFramework.framework/UnityFramework"];
+  }
+  else
+  {
+    binaryPath = [appPath stringByAppendingPathComponent:binaryPath];
+  }
 
-  Variables::IL2CPP::processAttach(unityFrameworkPath.UTF8String);
+  Variables::IL2CPP::processAttach(binaryPath.UTF8String);
 
   NSLog(@"UNITY_PATH: %@", dumpPath);
 

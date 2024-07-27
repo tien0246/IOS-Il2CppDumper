@@ -1,22 +1,23 @@
-#include <sstream>
-
 #include "Dumper.hpp"
-#include "Il2cpp.hpp"
-#include "Util.hpp"
-#include "il2cpp-tabledefs.h"
-
-#include "config.h"
 
 #pragma GCC diagnostic ignored "-Wundefined-internal"
 
 namespace Dumper {
-void *domain = nullptr;
-DumpStatus status = DumpStatus::NONE;
-std::string dumpDir = "";
+    void *domain = nullptr;
+    DumpStatus status = DumpStatus::NONE;
+    std::string dumpDir = "";
+    namespace GenScript {
+        json jsonData = json::object();
+        File scriptFile = File();
+        std::unordered_set<uint64_t> dataOffsets = std::unordered_set<uint64_t>();
+    }  // namespace GenScript
 }  // namespace Dumper
 
 void Dumper::init() {
     Dumper::domain = Variables::IL2CPP::il2cpp_domain_get();
+#if GENSCRIPT
+    GenScript::init();
+#endif
 }
 
 std::vector<void *> Dumper::getAssemblies() {
@@ -34,28 +35,6 @@ std::vector<void *> Dumper::getClasses(void *image) {
         classes.push_back(Variables::IL2CPP::il2cpp_image_get_class(il2cppImage, i));
     }
     return classes;
-}
-
-std::vector<void *> Dumper::getMethods(void *klass) {
-    std::vector<void *> methods;
-    void *iter = nullptr;
-    void *method = nullptr;
-
-    while ((method = Variables::IL2CPP::il2cpp_class_get_methods(klass, &iter)) != nullptr) {
-        methods.push_back(method);
-    }
-    return methods;
-}
-
-std::vector<void *> Dumper::getFields(void *klass) {
-    std::vector<void *> fields;
-    void *iter = nullptr;
-    void *field = nullptr;
-
-    while ((field = Variables::IL2CPP::il2cpp_class_get_fields(klass, &iter)) != nullptr) {
-        fields.push_back(field);
-    }
-    return fields;
 }
 
 Dumper::DumpStatus Dumper::dump(const std::string &dir, const std::string &headers_dir) {
@@ -181,6 +160,10 @@ Dumper::DumpStatus Dumper::dump(const std::string &dir, const std::string &heade
     Log("Dumping Completed.");
     dumpFile.write(dumpOut);
     dumpFile.close();
+#if GENSCRIPT
+    GenScript::save();
+    GenScript::scriptFile.close();
+#endif
     return Dumper::DumpStatus::SUCCESS;
 }
 
@@ -245,7 +228,6 @@ std::string Dumper::dumpField(void *klass) {
         } else {
             outPut << "; // 0x" << std::hex << std::uppercase << Variables::IL2CPP::il2cpp_field_get_offset(field) << "\n";
         }
-
     }
     if (outPut.str().length() == 12) return "";  // no fields
     return outPut.str();
@@ -256,7 +238,7 @@ std::string Dumper::dumpProperty(void *klass) {
     outPut << "\n\t// Properties\n";
     void *iter = nullptr;
     while (auto prop = Variables::IL2CPP::il2cpp_class_get_properties(klass, &iter)) {
-        //TODO attribute
+        // TODO attribute
         auto get = Variables::IL2CPP::il2cpp_property_get_get_method(prop);
         auto set = Variables::IL2CPP::il2cpp_property_get_set_method(prop);
         auto prop_name = Variables::IL2CPP::il2cpp_property_get_name(prop);
@@ -342,6 +324,16 @@ std::string Dumper::dumpMethod(void *klass) {
             outPut.seekp(-2, outPut.cur);
         }
         outPut << ") { }\n\n";
+
+        // Add method to script
+#if GENSCRIPT
+        if (methodPointer && (flags & METHOD_ATTRIBUTE_ABSTRACT) == 0) {
+            const char *classNamespace = Variables::IL2CPP::il2cpp_class_get_namespace(klass);
+            std::string className = getClassName(klass);
+            const char *methodName = Variables::IL2CPP::il2cpp_method_get_name(method);
+            GenScript::addMethod((uint64_t)methodPointer - Variables::info.address, std::string(classNamespace), className, std::string(methodName));
+        }
+#endif
     }
     if (outPut.str().length() == 13) return "";  // no methods
     return outPut.str();
@@ -433,3 +425,62 @@ std::string Dumper::uint16ToString(uint16_t *str) {
     }
     return out;
 }
+
+std::string Dumper::toHexUnicode(char c) {
+    std::stringstream ss;
+    ss << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << (int)c;
+    return ss.str();
+}
+
+std::string Dumper::convertNonAlnumToHexUnicode(const std::string &input) {
+    std::string out;
+    for (char c : input) {
+        if (isalnum(c) || c == '_' || c == '.') {
+            out += c;
+        } else {
+            out += "\\\\u" + toHexUnicode(c);
+        }
+    }
+    return out;
+}
+
+void Dumper::GenScript::init() {
+    jsonData["ScriptMethod"] = json::array();
+    scriptFile.open(dumpDir + "/script.json", "w");
+}
+
+void Dumper::GenScript::save() {
+    Log("Saving Script...");
+    if (!scriptFile.ok()) return;
+    std::string data = jsonData.dump(4, ' ', true);
+
+    // fix output of dump (idk, why it's like that)
+    size_t pos = 0;
+    while ((pos = data.find("\\\\\\\\u", pos)) != std::string::npos) {
+        data.replace(pos, 5, "\\u");
+        pos += 2;
+    }
+
+    scriptFile.write(data.c_str());
+    Log("Script Saved.");
+}
+
+void Dumper::GenScript::addMethod(uint64_t addr, std::string namespaze, std::string klass, std::string method) {
+    if (dataOffsets.find(addr) != dataOffsets.end()) {
+        return;
+    }
+    namespaze = convertNonAlnumToHexUnicode(namespaze);
+    method = convertNonAlnumToHexUnicode(method);
+    klass = convertNonAlnumToHexUnicode(klass);
+    std::string fullName;
+    if (namespaze.empty()) {
+        fullName = klass + "$$" + method;
+    } else {
+        fullName = namespaze + "." + klass + "$$" + method;
+    }
+    // Log("%s", fullName.c_str());
+    jsonData["ScriptMethod"].push_back({{"Address", addr},
+                                        {"Name", fullName}});
+    dataOffsets.insert(addr);
+}
+
