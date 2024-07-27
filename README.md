@@ -15,3 +15,8 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
 
 ### Discaimer 
 Not every game can be dumped with this tool, if it doesn't work in certain games it needs a bit of manual work
+
+#### Credits
+- Tien0246
+- Batchh
+- Perfare
