@@ -9,7 +9,7 @@ MOBILE_THEOS = 1
 ifeq ($(MOBILE_THEOS),1)
   THEOS_DEVICE_IP = 127.0.0.1
   # path to your sdk
-  SDK_PATH = $(THEOS)/sdks/iPhoneOS11.2.sdk/
+  SDK_PATH = $(THEOS)/sdks/iPhoneOS14.4.sdk/
   $(info ===> Setting SYSROOT to $(SDK_PATH)...)
   SYSROOT = $(SDK_PATH)
 else

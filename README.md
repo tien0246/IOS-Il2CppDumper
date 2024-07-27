@@ -4,7 +4,7 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
 
 ## How to Us
 
-- Install Theos (https://theos.dev/)
+- Install Theos (https://theos.dev/) and iPhoneOS14.4.sdk
 - Clone the repository:
   
   ```bash
