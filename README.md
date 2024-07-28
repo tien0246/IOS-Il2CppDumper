@@ -4,6 +4,15 @@ IOS Il2CppDumper, dump il2cpp data at runtime, can bypass protection, encryption
 
 ## How to Use
 
+### Don't know about Theos
+
+- Download deb from packages.
+- Open with iGameGod and instal/inject via iGameGod.
+- Tools -> iGameGod Installed Tweaks.
+- Enable your game which have UnityFramework file.
+
+### Know about Theos
+
 - Install Theos (https://theos.dev/) and iPhoneOS14.4.sdk
 - Clone the repository:
   

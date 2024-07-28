@@ -335,7 +335,7 @@ std::string Dumper::dumpMethod(void *klass) {
         }
 #endif
     }
-    if (outPut.str().length() == 13) return "";  // no methods
+    if (outPut.str().length() == 14) return "";  // no methods
     return outPut.str();
 }
 
