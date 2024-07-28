@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "config.h"
+
 #pragma GCC diagnostic ignored "-Wundefined-internal"
 
 class MemoryInfo
