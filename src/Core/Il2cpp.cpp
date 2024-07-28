@@ -95,7 +95,7 @@ namespace Variables {
                 sleep(1);
             }
 
-            info = getBaseAddress("UnityFramework");
+            info = getBaseAddress(BINARY_NAME);
 
             GETAPI(void *, il2cpp_domain_get, void);
             GETAPI(void **, il2cpp_domain_get_assemblies, const void *, size_t *);
