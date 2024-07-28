@@ -30,7 +30,7 @@ $(wildcard includes/SSZipArchive/SSZipArchive.m) $(wildcard includes/SSZipArchiv
 
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc $(ZIP_ARCHIVE_DEFINES) -Wno-deprecated-declarations
 
-$(TWEAK_NAME)_CCFLAGS = -std=c++17 -Iincludes -I$(KITTYMEMORY_PATH) -O2 -DkNO_KEYSTONE -DkNO_SUBSTRATE
+$(TWEAK_NAME)_CCFLAGS = -std=c++11 -Iincludes -I$(KITTYMEMORY_PATH) -O2 -DkNO_KEYSTONE -DkNO_SUBSTRATE
 
 $(TWEAK_NAME)_LDFLAGS = -lz -liconv -ldl
 
