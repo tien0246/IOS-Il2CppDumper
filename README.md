@@ -73,3 +73,4 @@ Not every game can be dumped with this tool, if it doesn't work in certain games
 - [Batchhh](https://github.com/Batchhh)
 - [Il2CppDumper](https://github.com/Perfare/Il2CppDumper)
 - [UE4Dumper-4.25](https://github.com/guttir14/UnrealDumper-4.25)
+- [Zygisk-Il2CppDumper](https://github.com/Perfare/Zygisk-Il2CppDumper)
