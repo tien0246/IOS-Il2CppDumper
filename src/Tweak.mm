@@ -56,6 +56,17 @@ void dump_thread()
 
   Variables::IL2CPP::processAttach(binaryPath.UTF8String);
 
+  if (Dumper::status != Dumper::DumpStatus::SUCCESS) {
+    if (Dumper::status == Dumper::DumpStatus::ERROR_FRAMEWORK) {
+      showError(@"Error while dumping, error framework");
+      return;
+    }
+    if (Dumper::status == Dumper::DumpStatus::ERROR_SYMBOLS) {
+      showError(@"Error while dumping, error symbols");
+      return;
+    }
+  }
+
   NSLog(@"UNITY_PATH: %@", dumpPath);
 
   NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -80,7 +91,7 @@ void dump_thread()
   SCLAlertView *waitingAlert = nil;
   showWaiting(@"Dumping...", &waitingAlert);
   
-  Dumper::dump(dumpPath.UTF8String, headersdumpPath.UTF8String);
+  Dumper::DumpStatus Dump =  Dumper::dump(dumpPath.UTF8String, headersdumpPath.UTF8String);
 
   if ([fileManager fileExistsAtPath:dumpPath])
   {
@@ -90,10 +101,9 @@ void dump_thread()
 
   dismisWaiting(waitingAlert);
 
-  if (Dumper::status != Dumper::DumpStatus::SUCCESS) {
-    if (Dumper::status == Dumper::DumpStatus::ERROR) {
-      showError(@"Error while dumping, check logs.txt");
-    }
+  if (Dump != Dumper::DumpStatus::SUCCESS) {
+    showError(@"Error while dumping, check logs.txt");
+    return;
   }
 
   NSLog(@"Dump finished.");
