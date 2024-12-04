@@ -218,6 +218,10 @@ std::string Dumper::dumpField(void *klass) {
             if (field_type_name == "String") {
                 void *val = nullptr;
                 Variables::IL2CPP::il2cpp_field_static_get_value(field, &val);
+                if (!val) {
+                    outPut << " = null;\n";
+                    continue;
+                }
                 uint16_t *chars = Variables::IL2CPP::il2cpp_string_chars(val);
                 outPut << " = \"" << uint16ToString(chars) << "\";\n";
             } else {
